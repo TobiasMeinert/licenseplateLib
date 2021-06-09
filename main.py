@@ -9,7 +9,8 @@ for path in glob.glob("Bilder/*.*"):
     cars.append(ILP(path))
 
 for car in cars:
-    print(car.path)
+    #print(car.name)
+    print(car.get_text())
 #print(janIstSoToll.path + janIstSoToll.get_text())
 #print(vwAuschnitt.path + vwAuschnitt.get_text())
 

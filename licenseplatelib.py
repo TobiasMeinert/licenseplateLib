@@ -30,7 +30,7 @@ class IdentifyLicensePlate:
 
     def __init__(self, path):
         self.rawImage = cv2.imread(path)  # Bild Importieren
-        self.path = path
+        self.name = (path.split("/")[1]).split(".")[0]
         self.imageList = []
         self.feature = ''
         # param:
@@ -45,15 +45,15 @@ class IdentifyLicensePlate:
         }
 
     def cut_image(self):
-
+        img = self.rawImage
         #cv2.imshow('imageBlur', imageBlur)
-        #img = cv2.resize(self.rawImage, (720, 480))
-        imageGrey = cv2.cvtColor(self.rawImage, cv2.COLOR_RGB2GRAY)  # zu Grau (1-Dimensionale Pixel) konvertieren
+        #img = cv2.resize(img, (720, 480))
+        imageGrey = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)  # zu Grau (1-Dimensionale Pixel) konvertieren
         #imageBlur = cv2.GaussianBlur(imageGrey, (3, 3), 1)  # Bild glätten
         imageBlur = cv2.bilateralFilter(imageGrey, 13, 15, 15)
-        #cv2.imshow('pimmel' + self.path, imageBlur)
-        edged = cv2.Canny(imageBlur, 30, 200, L2gradient = True)
-        #cv2.imshow('Kanten' + self.path, edged)
+        #cv2.imshow('pimmel' + self.name, imageBlur)
+        edged = cv2.Canny(imageBlur, 100, 200, apertureSize=7, L2gradient = True)
+        #cv2.imshow('Kanten' + self.name, edged)
         contours = cv2.findContours(edged.copy(), cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
         contours = imutils.grab_contours(contours)
         contours = sorted(contours, key=cv2.contourArea, reverse=True)[:10]
@@ -86,6 +86,7 @@ class IdentifyLicensePlate:
     def platetext_format(self, text):
         print(text)
         text = re.sub('[^A-Za-z0-9]+', ' ', text)
+        text = re.sub('[^A-Za-z0-9]+', ' ', text)
         match = re.match(r"[A-Z]{2,5}[0-9]{1,4}|[A-Z]{1,2}[ ][A-Z]{1,3}[ ][0-9]{1,4}",text)
         if match:
             #print('match: ' +match.string)
@@ -101,12 +102,12 @@ class IdentifyLicensePlate:
         for img in self.imageList:
             i = i + 1
             #cv2.imshow('get_blue' + str(i),img)
-            cv2.imshow(self.path + str(len(img)) + 'pre findBlue', img)
+            cv2.imshow(self.name + str(len(img)) + 'pre findBlue', img)
             #img = self.get_blue(img)
             if img.size != 0 :
                 img = self.convertToBaW(img, 70)              # Tobi?
                 img = cv2.GaussianBlur(img, (3, 3), 200)
-                #cv2.imshow(self.path + str(len(img)) + 'post findBlue', img)
+                #cv2.imshow(self.name + str(len(img)) + 'post findBlue', img)
             img_jpg = Image.fromarray(img)
             #print(tess.image_to_string(img_jpg))
             flag = self.platetext_format(tess.image_to_string(img_jpg))
@@ -117,7 +118,7 @@ class IdentifyLicensePlate:
         return False
 
     def get_text(self):
-        print(self.path)
+        print(self.name)
         flag = False
         while(flag == False):
             self.cut_image()
