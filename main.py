@@ -9,10 +9,11 @@ for path in glob.glob("Bilder/*.*"):
     cars.append(ILP(path))
 
 for car in cars:
-    #print(car.name)
-    print(car.get_text())
-#print(janIstSoToll.path + janIstSoToll.get_text())
-#print(vwAuschnitt.path + vwAuschnitt.get_text())
+    print("Das Kennzeichen ist: " + car.name + ' ' + car.get_text())
+    if len(car.district) > 0:
+        print("Das Auto kommt aus: " + car.district)
+
+
 
 
 

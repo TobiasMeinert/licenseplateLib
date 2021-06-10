@@ -15,6 +15,10 @@ DilateErodeY_X = 5
 DilateErodeY_Y = 6
 FactorWeightToHeight = 7
 
+
+
+
+
 reader = csv.reader(open('resources/dict.csv', 'r'))
 districtDict = {}
 for row in reader:
@@ -121,7 +125,7 @@ class IdentifyLicensePlate:
         self.parameter[parameter] = value
 
     def platetext_format(self, text):
-        text = re.sub('[^A-Za-z0-9]+', ' ', text)
+
         match = re.match(r"[A-Z]{2,5}[0-9]{1,4}|[A-Z]{1,2}[ ][A-Z]{1,3}[ ][0-9]{1,4}",text)
         #print(text)
         if match:
