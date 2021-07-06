@@ -4,15 +4,20 @@ import cv2
 import glob
 
 cars = []
-
+badCars = []
 for path in glob.glob("Bilder/*.*"):
-    cars.append(ILP(path))
+    cars.append(ILP(path, showDebug=True))
 
 for car in cars:
-    print("Das Kennzeichen ist: " + car.name + ' ' + car.get_text())
+    print("--------------------------------------Bearbeite jetzt: " + car.name + "\n")
+    print("Das Kennzeichen ist: " + car.name + ' ' + car.getLicenseplateString())
     if len(car.district) > 0:
         print("Das Auto kommt aus: " + car.district)
+    if car.feature == 'Nothing Found!':
+        badCars.append(car)
 
+
+print(str(len(badCars)/len(cars)*100) +"% ist die Fehlerquote ")
 
 
 

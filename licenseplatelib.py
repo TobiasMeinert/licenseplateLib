@@ -23,21 +23,34 @@ class IdentifyLicensePlate:
     def __init__(self, path):
         self.rawImage = cv2.imread(path)                        # Bild Importieren
         self.name = (path.split("/")[1]).split(".")[0]          # aus dem Path den Datei
-        self.imageList = []
         self.feature = ''
+        self.district = ''
+        self.showImages = showImages
+        self.showDebug = showDebug
+        self.flag = False
 
-    def get_text(self):
-        flag = False
-        while (flag == False):
-            self.cut_image()
-            flag = self.textRecognition()
-            if flag == False:
-                #self.imageList = []
-                self.feature = 'Nothing Found!'
-            break
-        return self.feature
+''' This Function gets a single picture or a list of pictures convert the image/s to text and validates the format. 
+    It returns the found Licenseplate number '''
+    def getLicenseplateString(self):
 
-    def cut_image(self):
+        imgJpgList = self.findAndCropLicenseplate()                             #Calling the function for the initial Path to find and crop the Licenseplate out of the picture
+        print("findAndCrop")
+        for img in imgJpgList:                                                  #For n elements in imgJpgList
+            self.validateFormat(tess.image_to_string(img, config='--psm 13'))   #Convert the image to text in single Line Mode ('--psm13') and validate the format of the converted text
+            if self.flag:                                                       #If a valid format was found...
+                return self.feature                                             #...return the found Licenseplate number
+
+
+        print("originalImgEdgeDetection")
+        if not self.flag:
+            for factor in range(1,5):
+                imgJpg = self.originalImgEdgeDetection(factor)
+                self.validateFormat(tess.image_to_string(imgJpg))
+                if self.flag:
+                    return self.feature
+        return "No licenseplate recognized"
+
+    def findAndCropLicenseplate(self):                                                      #This Function finds, in a given Picture of a car the Licenseplate,
         img = self.rawImage
         #cv2.imshow('imageBlur', imageBlur)
         #img = cv2.resize(img, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
@@ -67,17 +80,16 @@ class IdentifyLicensePlate:
         # Masking the part other than the number plate
 
         i = 0
+        imgList = []
         for count in screenCnt:
-            self.imageList.append(self.rawImage[count[:,0,1].min():count[:,0,1].max(),count[:,0,0].min() : count[:,0,0].max()])
+            imgList.append(self.rawImage[count[:,0,1].min():count[:,0,1].max(),count[:,0,0].min() : count[:,0,0].max()])
                 #cv2.imshow(str(i), self.imageList[i])
             i += 1
 
-    def textRecognition(self):
-        flag = False
-        i=0 #debug
-        for img in self.imageList:
-            i = i + 1
-            #cv2.imshow(self.name + str(len(img)) + 'preEdit', img)   #Für Presentation zeigen
+        editedImgList = []
+        for img in imgList:
+            if self.showImages == True:
+                cv2.imshow(self.name + str(len(img)) + 'preEdit', img)   #Für Presentation zeigen
             if img.size != 0 :
                 #img = self.dilateErode(img)
                 img = self.convertToBaW(img, 80)
@@ -86,19 +98,12 @@ class IdentifyLicensePlate:
                 #bilateralSigma = 2
                 #img = cv2.bilateralFilter(img, 9, bilateralSigma, bilateralSigma)
                 #img = cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 31, 2)
+                imgJpg = Image.fromarray(imgBlurred)
+                editedImgList.append(imgJpg)
 
-                #cv2.imshow(self.name + str(len(img)) + 'postEdit', img)
-                img = imgBlurred
-            img_jpg = Image.fromarray(imgBlurred)
-            #print(tess.image_to_string(img_jpg))
-            flag = self.platetext_format(tess.image_to_string(img_jpg))
-            if flag == True:
-                self.correctImage = img
-                return True
+        return editedImgList
 
-        return False
-
-    def platetext_format(self, text):
+    def validateFormat(self, text):
         if(len(text)>1):
             #print("original text:" + text)
             text = re.sub('[^A-Za-z0-9]+', ' ', text)

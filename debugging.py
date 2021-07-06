@@ -9,8 +9,8 @@ for path in glob.glob("Bilder/*.*"):
     cars.append(ILP(path))
 
 for car in cars:
-    print("Das Kennzeichen von " + car.name + " ist: " + car.get_text())
-    if car.get_text() == 'Nothing Found!':
+    print("Das Kennzeichen von " + car.name + " ist: " + car.getLicenseplateString())
+    if car.getLicenseplateString() == 'Nothing Found!':
         badCars.append(car)
 
 sBadCar = "Bad Cars are: "
