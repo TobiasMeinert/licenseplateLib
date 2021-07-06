@@ -5,7 +5,7 @@ import glob
 
 cars = []
 badCars = []
-for path in glob.glob("Bilder/*.*"):
+for path in glob.glob("pictures/*.*"):
     cars.append(ILP(path, showDebug=True))
 
 for car in cars:

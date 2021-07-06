@@ -1,6 +1,6 @@
 import cv2
 # Bild lesen
-rawImage = cv2.imread("Bilder/volvo.jpeg")
+rawImage = cv2.imread("pictures/volvo.jpeg")
 
  # Gaußsche Unschärfe, Bild glätten, Störgeräusche entfernen
 image = cv2.GaussianBlur(rawImage, (3, 3), 1)

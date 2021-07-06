@@ -2,12 +2,9 @@ import cv2
 import pytesseract as tess
 from PIL import Image
 import re
-import string
 import numpy as np
 import csv
 import imutils
-
-
 
 reader = csv.reader(open('resources/dict.csv', 'r'))
 districtDict = {}
@@ -29,7 +26,7 @@ class IdentifyLicensePlate:
         self.showDebug = showDebug
         self.flag = False
 
-''' This Function gets a single picture or a list of pictures convert the image/s to text and validates the format. 
+    ''' This Function gets a single picture or a list of pictures convert the image/s to text and validates the format. 
     It returns the found Licenseplate number '''
     def getLicenseplateString(self):
 
