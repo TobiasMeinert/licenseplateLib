@@ -18,6 +18,16 @@ for row in reader:                                                              
 class IdentifyLicensePlate:
 
     def __init__(self, path, showImages = False, showDebug = False):
+        '''
+        Reads the path and saves the picture in rawImage.
+        The name is generated from the path without the suffix.
+        Feature and district are going to be written by the validateFormat-method if it detects a licenseplate successfully.
+        Flag is going to be set true when an licenseplate is detected.
+
+        :param path: Path to the image which is going to be identified
+        :param showImages: Option to display images during the process.
+        :param showDebug: Option to display debug messages in terminal.
+        '''
         self.rawImage = cv2.imread(path)                        # Bild Importieren
         self.name = (path.split("/")[1]).split(".")[0]          # aus dem Path den Datei
         self.feature = ''
@@ -26,9 +36,14 @@ class IdentifyLicensePlate:
         self.showDebug = showDebug
         self.flag = False
 
-    ''' This Function gets a single picture or a list of pictures convert the image/s to text and validates the format. 
-    It returns the found Licenseplate number '''
+
     def getLicenseplateString(self):
+        '''
+        This function converts the initiated image to text and validates the format
+        It returns the found licenseplate number.
+
+        :return:  If identified successfully: licenseplate as string. If not: "No licenseplate recognized!"
+        '''
 
         imgJpgList = self.findAndCropLicenseplate()                             #Calling the function for the initial Path to find and crop the Licenseplate out of the picture
 
@@ -54,9 +69,11 @@ class IdentifyLicensePlate:
                     print("Nothing found on alternative path!")
         return "No licenseplate recognized!"
 
-    '''This function looks for patterns of European Licenseplate format in a given Picture of a car and returns all the found pattern matching cutouts. 
-    It is the Initial path for finding the Licenseplatenumber '''
+
     def findAndCropLicenseplate(self):
+        '''This function looks for patterns of European licenseplate format in a given Picture of a car and returns all the found pattern matching cutouts.
+            It is the Initial path for finding the licenseplatenumber.
+        '''
         img = self.rawImage                                                                 #get the Raw Image
         imgGrey = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)                                     #Convert the RGB picture into a greyscale picture
         imgBlur = cv2.bilateralFilter(imgGrey, 13, 15, 15)                                  #Blur the image to soften the edges
@@ -71,26 +88,22 @@ class IdentifyLicensePlate:
             # approximate the contour
             peri = cv2.arcLength(c, True)                                                   #Measure the perimeter of the contours
             approx = cv2.approxPolyDP(c, 0.018 * peri, True)                                #Approximate the shape of the contours (corners -> x-y-Coordinates)
-            # if our approximated contour has four points, then
-            # we can assume that we have found our screen
+                                                                                            # if our approximated contour has four points, then
+                                                                                            # we can assume that we have found our screen
             if len(approx) == 4:                                                            #If the approximated shape has 4 corners (4 * x-y-coordinates)...
                 screenCnt.append(approx)                                                    #Save the found contour
 
         # Masking the part other than the number plate
-
-        i = 0
         imgList = []                                                                        #Empty the array of imgList
         for count in screenCnt:                                                             #Iterate through the found shapes
-            imgList.append(self.rawImage[count[:,0,1].min():count[:,0,1].max(),count[:,0,0].min() : count[:,0,0].max()]) #Cut the shapes out of the original image and append that on a list
-                #cv2.imshow(str(i), self.imageList[i])
-            i += 1
+            imgList.append(self.rawImage[   count[:,0,1].min():count[:,0,1].max(),          #Cut the shapes out of the original image and append that on a list
+                                            count[:,0,0].min() : count[:,0,0].max()])
 
         editedImgList = []                                                                  #Empty the array of editedImgList
         for img in imgList:                                                                 #For every coutout in imgList
             if self.showImages == True:                                                     #-----Debug------
                 cv2.imshow(self.name + str(len(img)) + 'preEdit', img)
             if img.size != 0 :                                                              #If there is an reasonable sized cutout
-                #img = self.dilateErode(img)
                 img = self.convertToBaW(img, 80)                                            #Convert the cutout from RGB to a greyscale image
                 imgBlurred = cv2.GaussianBlur(img, (3,3), 2000)                             #Blur the cutout to soften the edges
                 imgJpg = Image.fromarray(imgBlurred)                                        #Convert the blurred cutout from a Numpy array to a .jpg format
@@ -98,12 +111,16 @@ class IdentifyLicensePlate:
 
         return editedImgList                                                                #Return the list of the edited cutouts
 
-    '''This function validates the Format of the given string whether it's a licenseplatenumber or not. It also returns the (german) district the car owner is living '''
     def validateFormat(self, text):
+        '''
+        If string matches, sets attributes feature, district and flag.
+
+        :param text: String to be checked if it matches the german plate format.
+        '''
+
         if(len(text)>1):                                                                    #If the given string is bigger 1...
             if self.showDebug == True:                                                      #-----Debug------
                 print("original text:"+repr(text))
-
             textarray = text.splitlines()                                                   #Split the lines of the given string which are indicated with '\n' into seperate strings
             feature = str()                                                                 #Empty the text output variable
             for text in textarray:                                                          #For every Line in the textArray
@@ -136,8 +153,15 @@ class IdentifyLicensePlate:
             if self.showDebug == True:                                                       #-----Debug------
                 print("len < 1")
 
-    '''This function converts a given grayscale image into a binary black and white image by a given threshold '''
     def convertToBaW(self, img, threshold):
+        '''
+        This function converts a given grayscale image into a binary black and white image by a given threshold.
+
+        :param img: Grayscale image to be converted.
+        :param threshold: Threshold which determinates if a grey pixel is converted to black or white.
+        :return: Converted Image.
+        '''
+
         img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)                                          #Convert the given image from RGB to a grayscale image
         for n in range(0, np.shape(img)[0]):                                                 #For every row in the numpy-array image...
             for m in range(0, np.shape(img)[1]):                                             #And for every coloum
@@ -146,9 +170,15 @@ class IdentifyLicensePlate:
                 else:                                                                        #If the value of the pixel is below the threshold...
                     img[n][m] = 0                                                            #Set the pixel to black (0)
         return img                                                                           #Return the black and white image
-    '''This function converts the given image by a factor to an edge detected image
-    It is the alternative path for finding the Licenseplatenumber'''
+
     def originalImgEdgeDetection(self, factor):
+        '''
+        This function converts the given image by a factor to an edge detected image
+        It is the alternative path for finding the licenseplatenumber.
+
+        :param factor:
+        :return:
+        '''
         img = self.rawImage                                                                 #Get the raw image
         imgGrey = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)                                     #convert the RGB Image to a grayscale image
         imgBlur = cv2.bilateralFilter(imgGrey, 13, 15, 15)                                  #Blur the image to soften the edges
@@ -158,8 +188,13 @@ class IdentifyLicensePlate:
         imgJpg = Image.fromarray(imgEdged)                                                 #Convert the numpy-array image to a .jpg format
         return imgJpg                                                                      #Return the .jpg image
 
-    '''This function finds the European standardized blue lining on the left side of the Licenseplate as a feature'''
     def get_blue(self, image):
+        '''
+        This function finds the European standardized blue lining on the left side of the Licenseplate as a feature.
+
+        :param image: Full scale image
+        :return:
+        '''
         imgBlue = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)                                    #Convert RGB image to HSV Image to get a better color spectrum to find the feature
         lower_range = np.array([110,50,50])                                                 #Define the lower threshold for the blue color
         upper_range = np.array([130,255,255])                                               #Define the upper threshold for the blue color
