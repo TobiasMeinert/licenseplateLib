@@ -6,6 +6,8 @@ import numpy as np
 import csv
 import imutils
 
+import panda
+
 reader = csv.reader(open('resources/dict.csv', 'r'))                            #open the .csv file of the german districts in read-mode and convert it to a 2 dimensional array of the 2 coloums: abbreviation and clear text (Example: [SU] [Rhein-Sieg-Kreis/Siegburg]
 districtDict = {}                                                               #empty the dictionary variable
 for row in reader:                                                              #for all elements in reader
