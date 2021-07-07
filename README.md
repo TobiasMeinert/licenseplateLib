@@ -24,7 +24,7 @@ The main method from the IdentifyLicensePlate is [getLicenseplateString](https:/
 
 To understand the image processing more in depth we are looking at the [findAndCropLicensePlate](https://github.com/meiTob/Kennzeichenerkennung/blob/b9627e55419c2de57726a856b065093ed5adde60/licenseplatelib.py#L73). This method searches in the original image for a licenseplate and cuts the suspected part of the image out. It returns a list with all cutted images. Note: The method will cut wrong images also. The text detection will filter them out. As long as the licenseplate is in the imagelist it is working.
     ![Flowchart findAndCropLicensePlate_1](/documentation/findAndCropLicensePlate_1.png)
-    ![Flowchart findAndCropLicensePlate_1](/documentation/findAndCropLicensePlate_1.png)
+    ![Flowchart findAndCropLicensePlate_2](/documentation/findAndCropLicensePlate_2.png)
 
 The returned imagelist is thrown into the text detection (explained later). If the text detection is not able to identify a licenseplate the [originalImgEdgeDetection](https://github.com/meiTob/Kennzeichenerkennung/blob/b9627e55419c2de57726a856b065093ed5adde60/licenseplatelib.py#L174) is used instead. This method takes the original image put some filter for edge detection on it. The image is then thrown into the text detection and we hope for the best.
     ![Flowchart originalImgEdgeDetection.ong](/documentation/originalImgEdgeDetection.png)
