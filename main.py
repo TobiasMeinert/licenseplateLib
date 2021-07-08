@@ -5,19 +5,24 @@ import glob
 
 cars = []
 badCars = []
+exampleCar = ILP("pictures/examplecar.jpg", showImages=True, showDebug=True)
+print("The Feature from: " + exampleCar.name + ' is ' + exampleCar.getLicenseplateString())
+if len(exampleCar.district) > 0:
+    print("The Car comes from: " + exampleCar.district)
+
+
+cars = []
 for path in glob.glob("pictures/*.*"):
     cars.append(ILP(path, showDebug=True))
 
 for car in cars:
-    print("--------------------------------------Bearbeite jetzt: " + car.name + "\n")
-    print("Das Kennzeichen ist: " + car.name + ' ' + car.getLicenseplateString())
+    print("The Feature from: " + car.name + ' is ' + car.getLicenseplateString())
     if len(car.district) > 0:
-        print("Das Auto kommt aus: " + car.district)
+        print("The Car comes from: " + car.district)
     if car.feature == 'Nothing Found!':
         badCars.append(car)
 
 
-print(str(len(badCars)/len(cars)*100) +"% ist die Fehlerquote ")
 
 
 
