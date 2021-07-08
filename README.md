@@ -13,8 +13,8 @@ Before working with this code you need to install some libraries. You can either
 | cv2               | [cv2 documentation](https://pypi.org/project/opencv-python/)  |
 | Pillow            | [Pillow documentation](https://pillow.readthedocs.io/en/stable/)  | 
 | Tesseract-OCR     | [Tesseract documentation](https://pypi.org/project/pytesseract/) |
-| NumPy             |[Numpy documentation](https://numpy.org/doc/stable/)
-| Imutils           |[Imutils documentation](https://pypi.org/project/imutils/)
+| NumPy             | [Numpy documentation](https://numpy.org/doc/stable/)
+| Imutils           | [Imutils documentation](https://pypi.org/project/imutils/)
 
 # Attributes and methods of the class
 
@@ -55,7 +55,7 @@ The showDebug option is going to print information about the image editing proce
 The showImages option will show multiple images of different steps from the image editing process.
 
 ```
-exampleCar = ILP("pictures/examplecar.jpg", showImages=True, showDebug=True)
+exampleCar = ILP("examplePictures/examplecar.jpg", showImages=True, showDebug=True)
 ```
 
 the method call ```.getLicenseplateString``` is going to start the identifying process. It returns the feature as string and will be printed into the terminal.

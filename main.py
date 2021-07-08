@@ -5,7 +5,7 @@ import glob
 
 cars = []
 badCars = []
-exampleCar = ILP("pictures/examplecar.jpg", showImages=True, showDebug=True)
+exampleCar = ILP("examplePicture/examplecar.jpg", showImages=True, showDebug=True)
 print("The Feature from: " + exampleCar.name + ' is ' + exampleCar.getLicenseplateString())
 if len(exampleCar.district) > 0:
     print("The Car comes from: " + exampleCar.district)
