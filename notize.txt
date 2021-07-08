@@ -1,5 +1,0 @@
-jansAchSoTollesBild:
-    standarteinstellungen: Ok
-    binärfilter, preBlue 100 : nicht Ok
-
-
